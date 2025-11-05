@@ -1,6 +1,12 @@
 CREATE DATABASE IF NOT EXISTS gerenciador_notas;
 USE gerenciador_notas;
 
+-- Status
+CREATE TABLE tb_status (
+    id_status INT AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(15) NOT NULL UNIQUE
+);
+
 -- Usuarios
 CREATE TABLE tb_usuarios (
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
@@ -8,7 +14,11 @@ CREATE TABLE tb_usuarios (
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     senha VARCHAR(255) NOT NULL,
-    status VARCHAR(50) NOT NULL,
+    id_status INT NOT NULL,
+    CONSTRAINT fk_status FOREIGN KEY (id_status)
+        REFERENCES tb_status (id_status)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
     data_nascimento DATE NOT NULL
 );
 
@@ -32,7 +42,11 @@ CREATE TABLE tb_matriculas (
     id_aluno INT NOT NULL, 
     id_disciplina INT NOT NULL,
     data_matricula DATE NOT NULL,
-    status VARCHAR(50) NOT NULL,
+    id_status INT NOT NULL,
+    CONSTRAINT fk_status_matricula FOREIGN KEY (id_status)
+        REFERENCES tb_status (id_status)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
     CONSTRAINT fk_matriculas_aluno FOREIGN KEY (id_aluno)
         REFERENCES tb_usuarios (id_usuario)
         ON DELETE CASCADE
@@ -57,13 +71,16 @@ CREATE TABLE tb_notas (
         ON UPDATE CASCADE
 );
 
-INSERT into tb_usuarios (perfil,nome,email,senha,status,data_nascimento)
+INSERT INTO tb_status(titulo)
+VALUES ('matriculado'), ('ativo'), ('formado'), ('trancado'), ('aprovado');
+
+INSERT into tb_usuarios (perfil,nome,email,senha,id_status,data_nascimento)
 VALUES
-('Professor', 'Roberto','roberto@email.com','senha123','matriculado','2000-01-01'),
-('Aluno', 'Felipe','felipe@email.com','senha123','formado','2005-06-01'),
-('Aluno', 'Luís','luis@email.com','senha123','trancado','1995-01-12'),
-('Coordenador', 'João','joao@email.com','senha123','ativo','1998-12-01'),
-('Professor', 'Claudia','claudia@email.com','senha123','ativo','2000-01-01');
+('Professor', 'Roberto','roberto@email.com','senha123',1,'2000-01-01'),
+('Aluno', 'Felipe','felipe@email.com','senha123',3,'2005-06-01'),
+('Aluno', 'Luís','luis@email.com','senha123',4,'1995-01-12'),
+('Coordenador', 'João','joao@email.com','senha123',2,'1998-12-01'),
+('Professor', 'Claudia','claudia@email.com','senha123',2,'2000-01-01');
 
 INSERT INTO tb_disciplinas(nome, id_professor, carga_horaria, numero_aulas, periodo)
 VALUES
@@ -71,11 +88,11 @@ VALUES
 ('Desenvolvimento Web I',2,40.5,19,2025.2),
 ('Banco de dados', 2, 40.5, 19, 2025.2);
 
-INSERT INTO tb_matriculas(id_aluno, id_disciplina, data_matricula, status)
+INSERT INTO tb_matriculas(id_aluno, id_disciplina, data_matricula, id_status)
 VALUES
-(2,1,'2025-01-02','trancado'),
-(3,2,'2025-07-02','matriculado'),
-(2,3,'2025-07-03','aprovado');
+(2,1,'2025-01-02',5),
+(3,2,'2025-07-02',1),
+(2,3,'2025-07-03',3);
 
 INSERT INTO tb_notas(id_matricula, tipo_avaliacao, nota, data_lancamento)
 VALUES
