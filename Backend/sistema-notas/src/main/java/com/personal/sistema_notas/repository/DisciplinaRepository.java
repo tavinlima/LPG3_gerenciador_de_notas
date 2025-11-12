@@ -6,5 +6,4 @@ import java.util.List;
 
 public interface DisciplinaRepository extends JpaRepository<Disciplina, Integer> {
     List<Disciplina> findByProfessorId(Integer professorId);
-    List<Disciplina> findByPeriodo(String periodo);
 }

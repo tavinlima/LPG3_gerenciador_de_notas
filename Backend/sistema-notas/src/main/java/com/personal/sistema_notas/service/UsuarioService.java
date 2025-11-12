@@ -57,6 +57,18 @@ public class UsuarioService {
                 .collect(Collectors.toList());
     }
 
+    public List<UsuarioResponseDTO> listarAlunos() {
+        return usuarioRepository.findAllAlunos().stream()
+                .map(this::toResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<UsuarioResponseDTO> listarProfessores() {
+        return usuarioRepository.findAllProfessores().stream()
+                .map(this::toResponseDTO)
+                .collect(Collectors.toList());
+    }
+
     @Transactional
     public UsuarioResponseDTO atualizar(Integer id, UsuarioRequestDTO dto) {
         Usuario usuario = usuarioRepository.findById(id)

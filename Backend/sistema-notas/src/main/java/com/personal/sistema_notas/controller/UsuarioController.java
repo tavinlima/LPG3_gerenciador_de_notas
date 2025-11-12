@@ -5,8 +5,10 @@ import com.personal.sistema_notas.dto.UsuarioRequestDTO;
 import com.personal.sistema_notas.dto.UsuarioResponseDTO;
 import com.personal.sistema_notas.repository.UsuarioRepository;
 import com.personal.sistema_notas.service.UsuarioService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -17,6 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/usuarios")
 @Validated
+@SecurityRequirement(name = "bearer-key")
 public class UsuarioController {
     private final UsuarioService usuarioService;
 
@@ -33,6 +36,24 @@ public class UsuarioController {
     @GetMapping("/{id}")
     public ResponseEntity<UsuarioResponseDTO> getById(@PathVariable Integer id) {
         return ResponseEntity.ok(usuarioService.buscarPorId(id));
+    }
+
+    @GetMapping("/perfil/{perfil}")
+    @PreAuthorize("hasAnyRole('COORDENADOR', 'PROFESSOR')")
+    public ResponseEntity<List<UsuarioResponseDTO>> getByPerfil(@RequestParam String perfil) {
+        return ResponseEntity.ok(usuarioService.listarPorPerfil(perfil));
+    }
+
+    @GetMapping("/professores")
+    @PreAuthorize("hasAnyRole('COORDENADOR', 'PROFESSOR', 'ALUNO')")
+    public ResponseEntity<List<UsuarioResponseDTO>> getAllProfessores() {
+        return ResponseEntity.ok(usuarioService.listarProfessores());
+    }
+
+    @GetMapping("/alunos")
+    @PreAuthorize("hasAnyRole('COORDENADOR', 'PROFESSOR')")
+    public ResponseEntity<List<UsuarioResponseDTO>> getAllAlunos() {
+        return ResponseEntity.ok(usuarioService.listarAlunos());
     }
 
     @PostMapping
