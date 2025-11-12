@@ -10,20 +10,21 @@ import lombok.*;
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
 public class Status {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_status;
+    private Integer id;
 
     @Column(name = "titulo", nullable = false, length = 15)
     private String titulo;
 
-    public Integer getId_status() {
-        return id_status;
+    public Integer getId() {
+        return id;
     }
 
-    public void setId_status(Integer id_status) {
-        this.id_status = id_status;
+    public void setId(Integer id_status) {
+        this.id = id_status;
     }
 
     public String getTitulo() {

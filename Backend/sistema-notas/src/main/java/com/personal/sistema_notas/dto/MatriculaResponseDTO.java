@@ -2,6 +2,7 @@ package com.personal.sistema_notas.dto;
 
 import lombok.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -13,6 +14,6 @@ public class MatriculaResponseDTO {
     private Integer alunoId;
     private String disciplinaNome;
     private Integer disciplinaId;
-    private LocalDate dataMatricula;
+    private LocalDateTime dataMatricula;
     private String status;
 }

@@ -1,28 +1,26 @@
 package com.personal.sistema_notas.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "tb_nota")
+@Table(name = "tb_notas")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
 public class Nota {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_nota;
+    private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "id_matricula", nullable = false)
-    private Matricula id_matricula;
+    private Matricula matricula;
 
     @Column(name = "tipo_avaliacao", nullable = false, length = 50)
     private String tipoAvaliacao;
@@ -36,20 +34,20 @@ public class Nota {
     @Column(name = "peso", nullable = false, precision = 4, scale = 2)
     private BigDecimal peso = BigDecimal.valueOf(1.0);
 
-    public Integer getId_nota() {
-        return id_nota;
+    public Integer getId() {
+        return id;
     }
 
-    public void setId_nota(Integer id_nota) {
-        this.id_nota = id_nota;
+    public void setId(Integer id_nota) {
+        this.id = id_nota;
     }
 
-    public Matricula getId_matricula() {
-        return id_matricula;
+    public Matricula getMatricula() {
+        return matricula;
     }
 
-    public void setId_matricula(Matricula id_matricula) {
-        this.id_matricula = id_matricula;
+    public void setMatricula(Matricula id_matricula) {
+        this.matricula = id_matricula;
     }
 
     public String getTipoAvaliacao() {

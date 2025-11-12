@@ -2,61 +2,98 @@ package com.personal.sistema_notas.service;
 
 import com.personal.sistema_notas.domain.Status;
 import com.personal.sistema_notas.domain.Usuario;
+import com.personal.sistema_notas.dto.UsuarioRequestDTO;
+import com.personal.sistema_notas.dto.UsuarioResponseDTO;
 import com.personal.sistema_notas.repository.StatusRepository;
 import com.personal.sistema_notas.repository.UsuarioRepository;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class UsuarioService {
+
     private final UsuarioRepository usuarioRepository;
     private final StatusRepository statusRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    public UsuarioService(UsuarioRepository usuarioRepository, StatusRepository statusRepository) {
-        this.usuarioRepository = usuarioRepository;
-        this.statusRepository = statusRepository;
+    @Transactional
+    public UsuarioResponseDTO criar(UsuarioRequestDTO dto) {
+        Status status = statusRepository.findById(dto.getStatusId())
+                .orElseThrow(() -> new RuntimeException("Status não encontrado"));
+
+        Usuario usuario = Usuario.builder()
+                .perfil(dto.getPerfil())
+                .nome(dto.getNome())
+                .email(dto.getEmail())
+                .senha(passwordEncoder.encode(dto.getSenha()))
+                .status(status)
+                .dataNascimento(dto.getDataNascimento())
+                .build();
+
+        Usuario salvo = usuarioRepository.save(usuario);
+        return toResponseDTO(salvo);
     }
 
-    @Transactional(readOnly = true)
-    public List<Usuario> listAll() {
-        List<Usuario> usuarios = usuarioRepository.findAll();
-        return usuarios;
+    public UsuarioResponseDTO buscarPorId(Integer id) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        return toResponseDTO(usuario);
     }
 
-    public Usuario create(Usuario usuario) {
-       Status status =  statusRepository.findById(usuario.getStatus().getId_status()).orElseThrow(() -> new RuntimeException("Status não encontrado"));
-
-        Usuario user =  new Usuario();
-        user.setNome(usuario.getNome());
-        user.setEmail(usuario.getEmail());
-        user.setSenha(usuario.getSenha());
-        user.setPerfil(usuario.getPerfil());
-        user.setStatus(status);
-
-        return usuarioRepository.save(user);
+    public List<UsuarioResponseDTO> listarTodos() {
+        return usuarioRepository.findAll().stream()
+                .map(this::toResponseDTO)
+                .collect(Collectors.toList());
     }
 
-    public Usuario update(Usuario usuario) {
-        Usuario user = usuarioRepository.findById(usuario.getId()).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-
-        user.setNome(usuario.getNome());
-        user.setEmail(usuario.getEmail());
-        user.setSenha(usuario.getSenha());
-        user.setPerfil(usuario.getPerfil());
-
-        return usuarioRepository.save(user);
+    public List<UsuarioResponseDTO> listarPorPerfil(String perfil) {
+        return usuarioRepository.findByPerfil(perfil).stream()
+                .map(this::toResponseDTO)
+                .collect(Collectors.toList());
     }
-    public Usuario findById(Integer id) {
-        return usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+    @Transactional
+    public UsuarioResponseDTO atualizar(Integer id, UsuarioRequestDTO dto) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        Status status = statusRepository.findById(dto.getStatusId())
+                .orElseThrow(() -> new RuntimeException("Status não encontrado"));
+
+        usuario.setPerfil(dto.getPerfil());
+        usuario.setNome(dto.getNome());
+        usuario.setEmail(dto.getEmail());
+        if (dto.getSenha() != null && !dto.getSenha().isEmpty()) {
+            usuario.setSenha(passwordEncoder.encode(dto.getSenha()));
+        }
+        usuario.setStatus(status);
+        usuario.setDataNascimento(dto.getDataNascimento());
+
+        Usuario atualizado = usuarioRepository.save(usuario);
+        return toResponseDTO(atualizado);
     }
-    public void delete(Integer id) {
-        Usuario existing = findById(id);
-        usuarioRepository.delete(existing);
+
+    @Transactional
+    public void deletar(Integer id) {
+        if (!usuarioRepository.existsById(id)) {
+            throw new RuntimeException("Usuário não encontrado");
+        }
+        usuarioRepository.deleteById(id);
+    }
+
+    private UsuarioResponseDTO toResponseDTO(Usuario usuario) {
+        return UsuarioResponseDTO.builder()
+                .id(usuario.getId())
+                .perfil(usuario.getPerfil())
+                .nome(usuario.getNome())
+                .email(usuario.getEmail())
+                .status(usuario.getStatus().getTitulo())
+                .dataNascimento(usuario.getDataNascimento())
+                .build();
     }
 }

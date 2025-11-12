@@ -1,69 +1,68 @@
 package com.personal.sistema_notas.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Entity
-@Table(name = "tb_matricula")
+@Table(name = "tb_matriculas")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
 public class Matricula {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_matricula;
+    private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "id_aluno", nullable = false)
-    private Usuario id_aluno;
+    private Usuario aluno;
 
     @ManyToOne
     @JoinColumn(name = "id_disciplina", nullable = false)
-    private Disciplina id_disciplina;
+    private Disciplina disciplina;
 
     @ManyToOne
     @JoinColumn(name = "id_status", nullable = false)
-    private Status id_status;
+    private Status status;
 
     @Column(name="data_matricula", nullable = false)
     private LocalDateTime data_matricula;
 
-    public Integer getId_matricula() {
-        return id_matricula;
+    public Integer getId() {
+        return id;
     }
 
-    public void setId_matricula(Integer id_matricula) {
-        this.id_matricula = id_matricula;
+    public void setId(Integer id_matricula) {
+        this.id = id_matricula;
     }
 
-    public Usuario getId_aluno() {
-        return id_aluno;
+    public Usuario getAluno() {
+        return aluno;
     }
 
-    public void setId_aluno(Usuario id_aluno) {
-        this.id_aluno = id_aluno;
+    public void setAluno(Usuario id_aluno) {
+        this.aluno = id_aluno;
     }
 
-    public Disciplina getId_disciplina() {
-        return id_disciplina;
+    public Disciplina getDisciplina() {
+        return disciplina;
     }
 
-    public void setId_disciplina(Disciplina id_disciplina) {
-        this.id_disciplina = id_disciplina;
+    public void setDisciplina(Disciplina id_disciplina) {
+        this.disciplina = id_disciplina;
     }
 
-    public Status getId_status() {
-        return id_status;
+    public Status getStatus() {
+        return status;
     }
 
-    public void setId_status(Status id_status) {
-        this.id_status = id_status;
+    public void setStatus(Status id_status) {
+        this.status = id_status;
     }
 
     public LocalDateTime getData_matricula() {

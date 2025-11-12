@@ -1,6 +1,8 @@
 package com.personal.sistema_notas.controller;
 
 import com.personal.sistema_notas.domain.Usuario;
+import com.personal.sistema_notas.dto.UsuarioRequestDTO;
+import com.personal.sistema_notas.dto.UsuarioResponseDTO;
 import com.personal.sistema_notas.repository.UsuarioRepository;
 import com.personal.sistema_notas.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,30 +26,30 @@ public class UsuarioController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Usuario>> findAll() {
-        return ResponseEntity.ok(usuarioService.listAll());
+    public ResponseEntity<List<UsuarioResponseDTO>> findAll() {
+        return ResponseEntity.ok(usuarioService.listarTodos());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Usuario> getById(@PathVariable Integer id) {
-        return ResponseEntity.ok(usuarioService.findById(id));
+    public ResponseEntity<UsuarioResponseDTO> getById(@PathVariable Integer id) {
+        return ResponseEntity.ok(usuarioService.buscarPorId(id));
     }
 
     @PostMapping
-    public ResponseEntity<Usuario> create(@RequestBody Usuario usuario) {
-        Usuario created = usuarioService.create(usuario);
+    public ResponseEntity<UsuarioResponseDTO> create(@RequestBody UsuarioRequestDTO usuario) {
+        UsuarioResponseDTO created = usuarioService.criar(usuario);
 
         return ResponseEntity.ok().body(created);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Usuario> update(@RequestBody Usuario usuario) {
-        return ResponseEntity.ok(usuarioService.update(usuario));
+    public ResponseEntity<UsuarioResponseDTO> update(@PathVariable Integer id, @RequestBody UsuarioRequestDTO usuario) {
+        return ResponseEntity.ok(usuarioService.atualizar(id, usuario));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
-        usuarioService.delete(id);
+        usuarioService.deletar(id);
         return ResponseEntity.noContent().build();
     }
 }

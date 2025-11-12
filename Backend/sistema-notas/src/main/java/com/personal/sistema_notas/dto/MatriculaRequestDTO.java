@@ -3,6 +3,7 @@ package com.personal.sistema_notas.dto;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 public class MatriculaRequestDTO {
@@ -12,7 +13,7 @@ public class MatriculaRequestDTO {
     @NotNull
     private Integer disciplinaId;
 
-    private LocalDate dataMatricula;
+    private LocalDateTime dataMatricula;
 
     @NotNull
     private Integer statusId;

@@ -9,9 +9,9 @@ import java.util.List;
 public interface NotaRepository extends JpaRepository<Nota, Integer> {
     List<Nota> findByMatriculaId(Integer matriculaId);
 
-    @Query("SELECT n FROM Nota n WHERE n.id_matricula.id_aluno.id_usuario = :alunoId")
+    @Query("SELECT n FROM Nota n WHERE n.matricula.aluno.id = :alunoId")
     List<Nota> findByAlunoId(@Param("alunoId") Integer alunoId);
 
-    @Query("SELECT n FROM Nota n WHERE n.id_matricula.id_disciplina.id_disciplina = :disciplinaId")
+    @Query("SELECT n FROM Nota n WHERE n.matricula.disciplina.id = :disciplinaId")
     List<Nota> findByDisciplinaId(@Param("disciplinaId") Integer disciplinaId);
 }

@@ -1,30 +1,28 @@
 package com.personal.sistema_notas.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "tb_disciplina")
+@Table(name = "tb_disciplinas")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
 public class Disciplina {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_disciplina;
+    private Integer id;
 
     @Column(name = "nome", nullable = false, length = 100)
     private String nome;
 
     @ManyToOne
-    @JoinColumn(name="id_usuario", nullable = false)
-    private Usuario professorId;
+    @JoinColumn(name="id_professor", nullable = false)
+    private Usuario professor;
 
     @Column(name = "carga_horaria", nullable = false, precision = 5, scale = 2)
     private BigDecimal cargaHoraria;
@@ -35,12 +33,12 @@ public class Disciplina {
     @Column(name="periodo", nullable = false, length = 6)
     private String periodo;
 
-    public Integer getId_disciplina() {
-        return id_disciplina;
+    public Integer getId() {
+        return id;
     }
 
-    public void setId_disciplina(Integer id_disciplina) {
-        this.id_disciplina = id_disciplina;
+    public void setId(Integer id_disciplina) {
+        this.id = id_disciplina;
     }
 
     public String getNome() {
@@ -51,12 +49,12 @@ public class Disciplina {
         this.nome = nome;
     }
 
-    public Usuario getProfessorId() {
-        return professorId;
+    public Usuario getProfessor() {
+        return professor;
     }
 
-    public void setProfessorId(Usuario professorId) {
-        this.professorId = professorId;
+    public void setProfessor(Usuario professorId) {
+        this.professor = professorId;
     }
 
     public BigDecimal getCargaHoraria() {

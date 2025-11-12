@@ -12,10 +12,11 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Data
+@Builder
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_usuario;
+    private Integer id;
 
     @Column(name = "nome", nullable = false, length = 100)
     private String nome;
@@ -37,11 +38,11 @@ public class Usuario {
     private LocalDateTime dataNascimento;
 
     public Integer getId() {
-        return id_usuario;
+        return id;
     }
 
     public void setId(Integer id) {
-        this.id_usuario = id;
+        this.id = id;
     }
 
     public String getNome() {

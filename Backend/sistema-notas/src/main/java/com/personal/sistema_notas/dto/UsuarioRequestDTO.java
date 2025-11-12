@@ -3,6 +3,7 @@ package com.personal.sistema_notas.dto;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 public class UsuarioRequestDTO {
@@ -26,5 +27,5 @@ public class UsuarioRequestDTO {
 
     @NotNull
     @Past
-    private LocalDate dataNascimento;
+    private LocalDateTime dataNascimento;
 }

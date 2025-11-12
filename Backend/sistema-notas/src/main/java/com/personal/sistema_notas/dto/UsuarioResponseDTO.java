@@ -2,6 +2,7 @@ package com.personal.sistema_notas.dto;
 
 import lombok.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -13,5 +14,5 @@ public class UsuarioResponseDTO {
     private String nome;
     private String email;
     private String status;
-    private LocalDate dataNascimento;
+    private LocalDateTime dataNascimento;
 }

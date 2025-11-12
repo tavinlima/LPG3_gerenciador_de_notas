@@ -2,6 +2,9 @@ package com.personal.sistema_notas.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -43,6 +46,15 @@ public class JwtTokenProvider {
                 .parseSignedClaims(token)
                 .getPayload();
         return Integer.parseInt(claims.getSubject());
+    }
+
+    public String getEmailFromToken(String token) {
+        Claims claims = Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+        return claims.get("email", String.class);
     }
 
     public boolean validateToken(String token) {
