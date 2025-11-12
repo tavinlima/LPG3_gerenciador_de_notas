@@ -1,0 +1,523 @@
+{
+  "info": {
+    "name": "Sistema de Gestão de Notas API",
+    "description": "Collection completa para testar todos os endpoints da API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{JWT_TOKEN}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "BASE_URL",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "JWT_TOKEN",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Autenticação",
+      "item": [
+        {
+          "name": "Login Coordenador",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "pm.environment.set(\"JWT_TOKEN\", jsonData.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"joao@email.com\",\n  \"senha\": \"senha123\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/auth/login",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Login Professor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"roberto@email.com\",\n  \"senha\": \"senha123\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/auth/login",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Login Aluno",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"felipe@email.com\",\n  \"senha\": \"senha123\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/auth/login",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Usuários",
+      "item": [
+        {
+          "name": "Criar Usuário",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"perfil\": \"Aluno\",\n  \"nome\": \"Carlos Santos\",\n  \"email\": \"carlos@email.com\",\n  \"senha\": \"senha123\",\n  \"statusId\": 2,\n  \"dataNascimento\": \"2002-08-20\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/usuarios",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "usuarios"]
+            }
+          }
+        },
+        {
+          "name": "Listar Todos Usuários",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/usuarios",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "usuarios"]
+            }
+          }
+        },
+        {
+          "name": "Buscar Usuário por ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/usuarios/2",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "usuarios", "2"]
+            }
+          }
+        },
+        {
+          "name": "Listar por Perfil",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/usuarios/perfil/Aluno",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "usuarios", "perfil", "Aluno"]
+            }
+          }
+        },
+        {
+          "name": "Atualizar Usuário",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"perfil\": \"Aluno\",\n  \"nome\": \"Carlos Santos Silva\",\n  \"email\": \"carlos@email.com\",\n  \"senha\": \"novaSenha123\",\n  \"statusId\": 2,\n  \"dataNascimento\": \"2002-08-20\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/usuarios/6",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "usuarios", "6"]
+            }
+          }
+        },
+        {
+          "name": "Deletar Usuário",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{BASE_URL}}/api/usuarios/6",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "usuarios", "6"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Disciplinas",
+      "item": [
+        {
+          "name": "Criar Disciplina",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Estrutura de Dados\",\n  \"professorId\": 1,\n  \"cargaHoraria\": 60.0,\n  \"numeroAulas\": 30,\n  \"periodo\": \"2025.2\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/disciplinas",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "disciplinas"]
+            }
+          }
+        },
+        {
+          "name": "Listar Todas Disciplinas",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/disciplinas",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "disciplinas"]
+            }
+          }
+        },
+        {
+          "name": "Buscar Disciplina por ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/disciplinas/1",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "disciplinas", "1"]
+            }
+          }
+        },
+        {
+          "name": "Listar Alunos Matriculados",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/disciplinas/1/alunos",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "disciplinas", "1", "alunos"]
+            }
+          }
+        },
+        {
+          "name": "Atualizar Disciplina",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Estrutura de Dados Avançada\",\n  \"professorId\": 1,\n  \"cargaHoraria\": 80.0,\n  \"numeroAulas\": 40,\n  \"periodo\": \"2025.2\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/disciplinas/4",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "disciplinas", "4"]
+            }
+          }
+        },
+        {
+          "name": "Deletar Disciplina",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{BASE_URL}}/api/disciplinas/4",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "disciplinas", "4"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Matrículas",
+      "item": [
+        {
+          "name": "Criar Matrícula",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"alunoId\": 2,\n  \"disciplinaId\": 2,\n  \"dataMatricula\": \"2025-11-11\",\n  \"statusId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/matriculas",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "matriculas"]
+            }
+          }
+        },
+        {
+          "name": "Listar Todas Matrículas",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/matriculas",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "matriculas"]
+            }
+          }
+        },
+        {
+          "name": "Buscar Matrícula por ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/matriculas/1",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "matriculas", "1"]
+            }
+          }
+        },
+        {
+          "name": "Matrículas de um Aluno",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/matriculas/aluno/2",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "matriculas", "aluno", "2"]
+            }
+          }
+        },
+        {
+          "name": "Matrículas de uma Disciplina",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/matriculas/disciplina/1",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "matriculas", "disciplina", "1"]
+            }
+          }
+        },
+        {
+          "name": "Atualizar Matrícula",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"alunoId\": 2,\n  \"disciplinaId\": 1,\n  \"dataMatricula\": \"2025-01-02\",\n  \"statusId\": 5\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/matriculas/1",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "matriculas", "1"]
+            }
+          }
+        },
+        {
+          "name": "Deletar Matrícula",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{BASE_URL}}/api/matriculas/4",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "matriculas", "4"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Notas",
+      "item": [
+        {
+          "name": "Criar Nota",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"matriculaId\": 2,\n  \"tipoAvaliacao\": \"Trabalho Final\",\n  \"nota\": 9.0,\n  \"peso\": 3.0\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/notas",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "notas"]
+            }
+          }
+        },
+        {
+          "name": "Listar Todas Notas",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/notas",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "notas"]
+            }
+          }
+        },
+        {
+          "name": "Buscar Nota por ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/notas/1",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "notas", "1"]
+            }
+          }
+        },
+        {
+          "name": "Notas de uma Matrícula",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/notas/matricula/1",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "notas", "matricula", "1"]
+            }
+          }
+        },
+        {
+          "name": "Atualizar Nota",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"matriculaId\": 1,\n  \"tipoAvaliacao\": \"Prova Substitutiva\",\n  \"nota\": 7.5,\n  \"peso\": 1.0\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/notas/3",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "notas", "3"]
+            }
+          }
+        },
+        {
+          "name": "Deletar Nota",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{BASE_URL}}/api/notas/5",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "notas", "5"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Relatórios",
+      "item": [
+        {
+          "name": "Histórico Completo do Aluno",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/alunos/2/historico",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "alunos", "2", "historico"]
+            }
+          }
+        },
+        {
+          "name": "Média do Aluno em Disciplina",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/alunos/2/media/1",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "alunos", "2", "media", "1"]
+            }
+          }
+        },
+        {
+          "name": "Disciplinas de um Professor",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/professores/1/disciplinas",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "professores", "1", "disciplinas"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
