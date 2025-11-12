@@ -19,7 +19,6 @@ import java.io.FileOutputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -153,7 +152,7 @@ public class NotaService {
 
     public Document gerarPdf(HistoricoAlunoDTO historico) {
         Document document = new Document();
-        try (FileOutputStream fos = new FileOutputStream("Relatório_aluno.pdf")) {
+        try (FileOutputStream fos = new FileOutputStream("relatorios/relatorio_aluno_" + historico.getAlunoId()+".pdf")) {
             PdfWriter.getInstance(document, fos);
 
             document.open();
@@ -172,6 +171,10 @@ public class NotaService {
                     historico.getAlunoEmail() +
                     "\n", textoFont));
 
+            Paragraph disciplinasHeader = new Paragraph("Disciplinas:\n", tituloFont);
+            disciplinasHeader.setAlignment(Element.ALIGN_CENTER);
+            document.add(disciplinasHeader);
+
             for (HistoricoAlunoDTO.DisciplinaHistoricoDTO d : historico.getDisciplinas()) {
                 Paragraph disciplinaTitulo = new Paragraph(
                         d.getDisciplinaNome() +
@@ -184,7 +187,7 @@ public class NotaService {
                 disciplinaTitulo.setSpacingAfter(5);
                 document.add(disciplinaTitulo);
 
-                // ======= TABELA DE NOTAS =======
+                // Tabela de notas
                 PdfPTable tabela = new PdfPTable(3); // 3 colunas: Tipo, Nota, Peso
                 tabela.setWidthPercentage(80);
                 tabela.setWidths(new int[]{4, 2, 2});
@@ -213,6 +216,8 @@ public class NotaService {
                     tabela.addCell(new PdfPCell(new Phrase(nota.getNota().toString(), textoFont)));
                     tabela.addCell(new PdfPCell(new Phrase(nota.getPeso().toString(), textoFont)));
                 }
+
+                tabela.setHorizontalAlignment(Element.ALIGN_LEFT);
 
                 document.add(tabela);
             }
