@@ -11,6 +11,7 @@ import java.util.List;
 public class HistoricoAlunoDTO {
     private Integer alunoId;
     private String alunoNome;
+    private String alunoEmail;
     private List<DisciplinaHistoricoDTO> disciplinas;
 
     @Data

@@ -1,6 +1,8 @@
 package com.personal.sistema_notas.service;
 
 import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.personal.sistema_notas.dto.*;
 import com.personal.sistema_notas.domain.Matricula;
@@ -33,10 +35,6 @@ public class NotaService {
     public NotaResponseDTO criar(NotaRequestDTO dto) {
         Matricula matricula = matriculaRepository.findById(dto.getMatriculaId())
                 .orElseThrow(() -> new RuntimeException("Matrícula não encontrada"));
-
-        if(dto.getNota().compareTo(BigDecimal.valueOf(5.6)) >=0) {
-            dto.setNota(BigDecimal.valueOf(6.0));
-        }
 
         Nota nota = Nota.builder()
                 .matricula(matricula)
@@ -104,17 +102,19 @@ public class NotaService {
                     List<Nota> notas = notaRepository.findByMatriculaId(matricula.getId());
                     BigDecimal media = calcularMediaPonderada(notas);
 
-                    if(media.compareTo(BigDecimal.valueOf(6)) <= 0 && media.compareTo(BigDecimal.valueOf(4)) >=0) {
+                    if(media.compareTo(BigDecimal.valueOf(5.6)) >=0 && media.compareTo(BigDecimal.valueOf(6)) <=0)
+                        media = (BigDecimal.valueOf(6.0));
+
+
+                    if(media.compareTo(BigDecimal.valueOf(6)) < 0 && media.compareTo(BigDecimal.valueOf(4)) >=0) {
                         matricula.setStatus(statusRepository.findByTitulo("recuperacao"));
-                        matriculaRepository.save(matricula);
                     } else if (media.compareTo(BigDecimal.valueOf(4)) <= 0) {
                         matricula.setStatus(statusRepository.findByTitulo("reprovado"));
-                        matriculaRepository.save(matricula);
                     }
                     else {
                         matricula.setStatus(statusRepository.findByTitulo("aprovado"));
-                        matriculaRepository.save(matricula);
                     }
+                    matriculaRepository.save(matricula);
 
                     List<HistoricoAlunoDTO.NotaDetalheDTO> notasDetalhe = notas.stream()
                             .map(nota -> HistoricoAlunoDTO.NotaDetalheDTO.builder()
@@ -134,35 +134,97 @@ public class NotaService {
                 })
                 .collect(Collectors.toList());
 
-        Document document = new Document();
-        PdfWriter.getInstance(document, new FileOutputStream("Relatório_aluno.pdf"));
-
-        document.open();
-        Font font = FontFactory.getFont(FontFactory.COURIER, 16, BaseColor.BLACK);
-        Chunk chunk = new Chunk("Relatório de alunos", font);
-
-        HistoricoAlunoDTO aluno = HistoricoAlunoDTO.builder()
+        HistoricoAlunoDTO historico = HistoricoAlunoDTO.builder()
                 .alunoId(alunoId)
                 .alunoNome(matriculas.get(0).getAluno().getNome())
+                .alunoEmail(matriculas.get(0).getAluno().getEmail())
                 .disciplinas(disciplinasHistorico)
                 .build();
 
-        Paragraph paragraph = new Paragraph(
-                "Aluno: " + aluno.getAlunoNome() +
-                "Disciplinas: " + aluno.getDisciplinas(), font);
-        paragraph.setAlignment(Element.ALIGN_CENTER);
-
-
-        document.add(chunk);
-        document.add(paragraph);
-        System.out.println("PDF criado com sucesso!" + document);
-        document.close();
+        gerarPdf(historico);
 
         return HistoricoAlunoDTO.builder()
                 .alunoId(alunoId)
                 .alunoNome(matriculas.get(0).getAluno().getNome())
+                .alunoEmail(matriculas.get(0).getAluno().getEmail())
                 .disciplinas(disciplinasHistorico)
                 .build();
+    }
+
+    public Document gerarPdf(HistoricoAlunoDTO historico) {
+        Document document = new Document();
+        try (FileOutputStream fos = new FileOutputStream("Relatório_aluno.pdf")) {
+            PdfWriter.getInstance(document, fos);
+
+            document.open();
+
+            Font tituloFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18, BaseColor.BLACK);
+            Font textoFont = FontFactory.getFont(FontFactory.HELVETICA, 12, BaseColor.BLACK);
+
+            Paragraph titulo = new Paragraph("Relatório de Aluno\n\n", tituloFont);
+            titulo.setAlignment(Element.ALIGN_CENTER);
+            document.add(titulo);
+
+            document.add(new Paragraph("Aluno \n" +
+                    "Nome: " +
+                    historico.getAlunoNome() +
+                    "\n" + "E-mail: " +
+                    historico.getAlunoEmail() +
+                    "\n", textoFont));
+
+            for (HistoricoAlunoDTO.DisciplinaHistoricoDTO d : historico.getDisciplinas()) {
+                Paragraph disciplinaTitulo = new Paragraph(
+                        d.getDisciplinaNome() +
+                                " | Período: " + d.getPeriodo() +
+                                " | Média Final: " + d.getMediaFinal() +
+                                " | Status: " + d.getStatus(),
+                        textoFont
+                );
+                disciplinaTitulo.setSpacingBefore(10);
+                disciplinaTitulo.setSpacingAfter(5);
+                document.add(disciplinaTitulo);
+
+                // ======= TABELA DE NOTAS =======
+                PdfPTable tabela = new PdfPTable(3); // 3 colunas: Tipo, Nota, Peso
+                tabela.setWidthPercentage(80);
+                tabela.setWidths(new int[]{4, 2, 2});
+
+                // Cabeçalhos
+                PdfPCell header1 = new PdfPCell(new Phrase("Tipo de Avaliação", textoFont));
+                PdfPCell header2 = new PdfPCell(new Phrase("Nota", textoFont));
+                PdfPCell header3 = new PdfPCell(new Phrase("Peso", textoFont));
+
+                BaseColor headerColor = new BaseColor(60, 120, 180);
+                header1.setBackgroundColor(headerColor);
+                header2.setBackgroundColor(headerColor);
+                header3.setBackgroundColor(headerColor);
+
+                header1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                header2.setHorizontalAlignment(Element.ALIGN_CENTER);
+                header3.setHorizontalAlignment(Element.ALIGN_CENTER);
+
+                tabela.addCell(header1);
+                tabela.addCell(header2);
+                tabela.addCell(header3);
+
+                // Linhas de notas
+                for (HistoricoAlunoDTO.NotaDetalheDTO nota : d.getNotas()) {
+                    tabela.addCell(new PdfPCell(new Phrase(nota.getTipoAvaliacao(), textoFont)));
+                    tabela.addCell(new PdfPCell(new Phrase(nota.getNota().toString(), textoFont)));
+                    tabela.addCell(new PdfPCell(new Phrase(nota.getPeso().toString(), textoFont)));
+                }
+
+                document.add(tabela);
+            }
+
+            document.close();
+            System.out.println("PDF criado com sucesso: Relatório_aluno.pdf");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return document;
     }
 
     public MediaAlunoDTO obterMediaPorDisciplina(Integer alunoId, Integer disciplinaId) {
